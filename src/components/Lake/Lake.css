@@ -6,10 +6,10 @@ div.frog{
 
     transition: background-color 1s ease-in-out;
     display: inline-block;
-    min-width: 9vw;
-    max-width: 9vw;
-    min-height: 16vh;
-    max-height: 16vh;
+    min-width: 8vw;
+    max-width: 8vw;
+    min-height: 8vw;
+    max-height: 8vw;
     line-break:anywhere;
     overflow: hidden;
     font-size: small;

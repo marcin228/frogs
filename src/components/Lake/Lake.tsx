@@ -124,6 +124,8 @@ const Lake:React.FC<LakeProps> = () => {
         const cell2 = tmpLakeState[pos2.y][pos2.x];
         const femalePos = cell1.gender == Gender.female ? pos1 : pos2;
 
+        console.log('FEMALEPOS', femalePos)
+
         if(cell1.alive && cell2.alive && cell1.gender != cell2.gender && distance == 1){
 
             const childPos = checkAdjacentCellsInMatrix(femalePos, tmpLakeState);
