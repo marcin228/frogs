@@ -61,6 +61,15 @@ const Lake:React.FC<LakeProps> = () => {
         return result;
     }
 
+    const getCellStyle = function(alive:boolean, gender:Gender){
+
+        if(alive){
+            if(gender == Gender.male) return 'frog male'
+            else return 'frog female'
+        }
+        else return 'frog'
+    }
+
     const onClickJumpHandler = function():void{
 
         const [id1, id2] = [...selectedFrogsIds.values()].map(Number);
@@ -204,7 +213,7 @@ const Lake:React.FC<LakeProps> = () => {
     );
 
     return (
-      <>
+      <div className="lake">
         <div className="buttons">
             <button onClick={onClickJumpHandler}>JUMP</button>
             <button onClick={onClickReproduce}>REPRODUCE</button>
@@ -212,8 +221,10 @@ const Lake:React.FC<LakeProps> = () => {
 
         {lakeState.map((row) =>
           row.map((cell) => (
-            <div key={cell.id} className="frog">
+            <div key={cell.id} 
+                className={getCellStyle(cell.alive, cell.gender)}>
               {JSON.stringify(cell)}
+              <br /><br />
               <input
                 type="checkbox"
                 checked={(cell as Frog).checked ? true : false}
@@ -223,7 +234,7 @@ const Lake:React.FC<LakeProps> = () => {
             </div>
           ))
         )}
-      </>
+      </div>
     );
 };
 

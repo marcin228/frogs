@@ -1,4 +1,10 @@
+.lake{
+    margin: 0 auto;
+    text-align: center;
+}
 div.frog{
+
+    transition: background-color 1s ease-in-out;
     display: inline-block;
     min-width: 9vw;
     max-width: 9vw;
@@ -7,5 +13,33 @@ div.frog{
     line-break:anywhere;
     overflow: hidden;
     font-size: small;
-    padding:4px;
+    padding:0.5vw;
+    text-align: center;
+
+    &.male{
+        background-color: aqua;
+        color: black;
+    }
+
+    &.female{
+        background-color: fuchsia;
+        color: black;
+    }
+}
+
+input[type="checkbox"]{
+
+    width: 2vw;
+    height: 2vw;
+}
+
+div.buttons{
+
+    text-align: center;
+    padding: 2vw;
+
+    & button{
+        padding: 0.25vw 0.5vw;
+        margin: 0.25vw;
+    }
 }
