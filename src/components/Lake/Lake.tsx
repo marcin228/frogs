@@ -7,7 +7,11 @@ type LakeProps = {
     children?:React.ReactNode,
 }
 
-type Gender = 'male' | 'female';
+enum Gender {
+    male = 'male',
+    female = 'female'
+}
+
 type Weight = 'fat' | 'slim';
 type Height = 'tall' | 'short';
 type Characteristics = [Weight, Height];
@@ -23,37 +27,48 @@ type Frog = {
 const LAKE_WIDTH:number = 10;
 const LAKE_HEIGTH:number = 6;
 
+const MALE_DISTANCE: number = 3;
+const FEMALE_DISTANCE: number = 2;
+
 const Lake:React.FC<LakeProps> = ({ children }) => {
 
     const onClickJumpHandler = function():void{
 
-
         const [id1, id2] = [...selectedFrogsIds.values()].map(Number);
         const tmpLakeState = structuredClone(lakeState);
 
-        const cell1 = { y: Math.floor(id1 / LAKE_WIDTH), x: id1 % LAKE_WIDTH }
-        const cell2 = { y: Math.floor(id2 / LAKE_WIDTH), x: id2 % LAKE_WIDTH }
+        const pos1 = { y: Math.floor(id1 / LAKE_WIDTH), x: id1 % LAKE_WIDTH }
+        const pos2 = { y: Math.floor(id2 / LAKE_WIDTH), x: id2 % LAKE_WIDTH }
 
-        const distance = Helpers.calculateDistance(cell1, cell2);
+        const distance = Helpers.calculateDistance(pos1, pos2);
+        
+        const cell1 = tmpLakeState[pos1.y][pos1.x];
+        const cell2 = tmpLakeState[pos2.y][pos2.x];
+        const aliveCell = (cell1.alive) ? cell1 : cell2;
 
-        console.log(distance);
+        if(aliveCell.gender == Gender.male && distance > MALE_DISTANCE)
+            return;
+
+        if(aliveCell.gender == Gender.female && distance > FEMALE_DISTANCE)
+            return;
 
         if (
-          (tmpLakeState[cell1.y][cell1.x]?.alive == true &&
-            tmpLakeState[cell2.y][cell2.x]?.alive == false) ||
-          (tmpLakeState[cell1.y][cell1.x]?.alive == false &&
-            tmpLakeState[cell2.y][cell2.x]?.alive == true)
+          (tmpLakeState[pos1.y][pos1.x]?.alive == true &&
+            tmpLakeState[pos2.y][pos2.x]?.alive == false) ||
+          (tmpLakeState[pos1.y][pos1.x]?.alive == false &&
+            tmpLakeState[pos2.y][pos2.x]?.alive == true)
         ) {
-            const tmp = structuredClone(tmpLakeState[cell1.y][cell1.x]);
-            tmpLakeState[cell1.y][cell1.x] = tmpLakeState[cell2.y][cell2.x];
-            tmpLakeState[cell2.y][cell2.x] = tmp;
+          const tmp = structuredClone(tmpLakeState[pos1.y][pos1.x]);
 
-            [
-              tmpLakeState[cell1.y][cell1.x].id,
-              tmpLakeState[cell2.y][cell2.x].id,
-            ] = [tmpLakeState[cell2.y][cell2.x].id, tmpLakeState[cell1.y][cell1.x].id];
+          tmpLakeState[pos1.y][pos1.x] = tmpLakeState[pos2.y][pos2.x];
+          tmpLakeState[pos2.y][pos2.x] = tmp;
 
-            setLakeState(tmpLakeState);
+          [tmpLakeState[pos1.y][pos1.x].id, tmpLakeState[pos2.y][pos2.x].id] = [
+            tmpLakeState[pos2.y][pos2.x].id,
+            tmpLakeState[pos1.y][pos1.x].id,
+          ];
+
+          setLakeState(tmpLakeState);
         }
     }
 
@@ -107,7 +122,7 @@ const Lake:React.FC<LakeProps> = ({ children }) => {
                       ? true
                       : false,
                   checked: false,
-                  gender: "male",
+                  gender: Gender.male,
                   characteristics: ["fat", "tall"],
                 };
             })
