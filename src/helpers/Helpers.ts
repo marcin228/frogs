@@ -12,7 +12,7 @@ const Helpers = {
         const xDistance = Math.abs(point1.x - point2.x);
         const yDistance = Math.abs(point1.y - point2.y);
 
-        return xDistance + yDistance;
+        return Math.max(xDistance, yDistance);
     }
 };
 
