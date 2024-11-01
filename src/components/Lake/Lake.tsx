@@ -124,8 +124,6 @@ const Lake:React.FC<LakeProps> = () => {
         const cell2 = tmpLakeState[pos2.y][pos2.x];
         const femalePos = cell1.gender == Gender.female ? pos1 : pos2;
 
-        console.log('FEMALEPOS', femalePos)
-
         if(cell1.alive && cell2.alive && cell1.gender != cell2.gender && distance == 1){
 
             const childPos = checkAdjacentCellsInMatrix(femalePos, tmpLakeState);
@@ -197,14 +195,18 @@ const Lake:React.FC<LakeProps> = () => {
                     defaultGender = Gender.female;
 
                 return {
-                    id: row * LAKE_WIDTH + col,
-                    alive: isAlive,
-                    checked: false,
-                    gender: defaultGender,
-                    characteristics: [
-                        Weight.fat,
-                        Height.tall,
-                    ] as Characteristics,
+                  id: row * LAKE_WIDTH + col,
+                  alive: isAlive,
+                  checked: false,
+                  gender: defaultGender,
+                  characteristics: [
+                    Helpers.getRandomNumber(0, 1) == 0
+                      ? Weight.fat
+                      : Weight.slim,
+                    Helpers.getRandomNumber(0, 1) == 0
+                      ? Height.tall
+                      : Height.short
+                  ] as Characteristics,
                 };
             })
         )
