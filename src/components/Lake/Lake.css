@@ -1,6 +1,7 @@
 .lake{
     margin: 0 auto;
     text-align: center;
+    font-size:0;
 }
 div.frog{
 
@@ -25,6 +26,10 @@ div.frog{
         background-color: fuchsia;
         color: black;
     }
+
+    &:has(input[type="checkbox"]:checked){
+        animation: pulse 1s infinite;
+    }
 }
 
 input[type="checkbox"]{
@@ -42,4 +47,10 @@ div.buttons{
         padding: 0.25vw 0.5vw;
         margin: 0.25vw;
     }
+}
+
+@keyframes pulse{
+    0% { opacity: 1; }
+    50% { opacity: 0.9; }
+    100% { opacity: 1; }
 }
