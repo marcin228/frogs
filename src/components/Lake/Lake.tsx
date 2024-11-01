@@ -70,10 +70,23 @@ const Lake:React.FC<LakeProps> = () => {
         else return 'frog'
     }
 
+    const resetChecked = function(matrix:Array<Array<Frog>>){
+        
+        for (let i = 0, l1 = matrix.length; i < l1; i++)
+            for (let j = 0, l2 = matrix[0].length; j < l2; j++)
+                matrix[i][j].checked = false;
+                
+        setLakeState(matrix);
+        setSelectedFrogsNum(0);
+        setSelectedFrogsIds(new Set());
+    }
+
     const onClickJumpHandler = function():void{
 
         const [id1, id2] = [...selectedFrogsIds.values()].map(Number);
         const tmpLakeState = structuredClone(lakeState);
+
+        resetChecked(tmpLakeState);
 
         const pos1 = { y: Math.floor(id1 / LAKE_WIDTH), x: id1 % LAKE_WIDTH }
         const pos2 = { y: Math.floor(id2 / LAKE_WIDTH), x: id2 % LAKE_WIDTH }
@@ -114,6 +127,8 @@ const Lake:React.FC<LakeProps> = () => {
 
         const [id1, id2] = [...selectedFrogsIds.values()].map(Number);
         const tmpLakeState = structuredClone(lakeState);
+
+        resetChecked(tmpLakeState);
 
         const pos1 = { y: Math.floor(id1 / LAKE_WIDTH), x: id1 % LAKE_WIDTH };
         const pos2 = { y: Math.floor(id2 / LAKE_WIDTH), x: id2 % LAKE_WIDTH };
