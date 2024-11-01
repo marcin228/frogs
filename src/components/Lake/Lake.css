@@ -1,0 +1,9 @@
+div.frog{
+    display: inline-block;
+    min-width: 10vw;
+    max-width: 10vw;
+    min-height: 16vh;
+    max-height: 16vh;
+    line-break:anywhere;
+    overflow: hidden;
+}
