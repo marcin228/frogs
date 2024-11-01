@@ -1,5 +1,7 @@
 import React, { useState } from "react"
 import './Lake.css'
+import '../../helpers/Helpers'
+import Helpers from "../../helpers/Helpers";
 
 type LakeProps = {
     children?:React.ReactNode,
@@ -25,11 +27,16 @@ const Lake:React.FC<LakeProps> = ({ children }) => {
 
     const onClickJumpHandler = function():void{
 
+
         const [id1, id2] = [...selectedFrogsIds.values()].map(Number);
         const tmpLakeState = structuredClone(lakeState);
 
-        const cell1 = { y: Math.floor(id1 / LAKE_WIDTH), x:id1 % LAKE_WIDTH }
-        const cell2 = { y: Math.floor(id2 / LAKE_WIDTH), x:id2 % LAKE_WIDTH }
+        const cell1 = { y: Math.floor(id1 / LAKE_WIDTH), x: id1 % LAKE_WIDTH }
+        const cell2 = { y: Math.floor(id2 / LAKE_WIDTH), x: id2 % LAKE_WIDTH }
+
+        const distance = Helpers.calculateDistance(cell1, cell2);
+
+        console.log(distance);
 
         if (
           (tmpLakeState[cell1.y][cell1.x]?.alive == true &&
@@ -37,11 +44,16 @@ const Lake:React.FC<LakeProps> = ({ children }) => {
           (tmpLakeState[cell1.y][cell1.x]?.alive == false &&
             tmpLakeState[cell2.y][cell2.x]?.alive == true)
         ) {
-          const tmp = structuredClone(tmpLakeState[cell1.y][cell1.x]);
-          tmpLakeState[cell1.y][cell1.x] = tmpLakeState[cell2.y][cell2.x];
-          tmpLakeState[cell2.y][cell2.x] = tmp;
+            const tmp = structuredClone(tmpLakeState[cell1.y][cell1.x]);
+            tmpLakeState[cell1.y][cell1.x] = tmpLakeState[cell2.y][cell2.x];
+            tmpLakeState[cell2.y][cell2.x] = tmp;
 
-          setLakeState(tmpLakeState);
+            [
+              tmpLakeState[cell1.y][cell1.x].id,
+              tmpLakeState[cell2.y][cell2.x].id,
+            ] = [tmpLakeState[cell2.y][cell2.x].id, tmpLakeState[cell1.y][cell1.x].id];
+
+            setLakeState(tmpLakeState);
         }
     }
 
