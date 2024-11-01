@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, HTMLElement } from "react"
 import './Lake.css'
 
 type LakeProps = {
@@ -23,7 +23,16 @@ const LAKE_HEIGTH:number = 6;
 
 const Lake:React.FC<LakeProps> = ({ children }) => {
   
-  const onClickCheckboxHandler = function (pos:number) {
+  const onClickCheckboxHandler = function (event:Event, pos:number) {
+
+    if(selectedFrogsNum >= 2){
+      if((event.currentTarget as HTMLInputElement).checked){
+        event.preventDefault();
+        return;
+      }
+      else setSelectedFrogsNum((val) => val - 1);
+    }
+    else setSelectedFrogsNum((val) => val + 1);
 
     const tmpLakeState = structuredClone(lakeState);
     tmpLakeState[Math.floor(pos / LAKE_WIDTH)][pos % LAKE_WIDTH].checked =
@@ -32,6 +41,7 @@ const Lake:React.FC<LakeProps> = ({ children }) => {
     setLakeState(tmpLakeState); 
   };
 
+  const [selectedFrogsNum, setSelectedFrogsNum] = useState(0);
   const [lakeState, setLakeState] = useState(
     new Array(LAKE_HEIGTH).fill(null).map((a, row) =>
       new Array(LAKE_WIDTH).fill(null).map((b, col) => {
@@ -55,7 +65,7 @@ const Lake:React.FC<LakeProps> = ({ children }) => {
             <input
               type="checkbox"
               defaultChecked={(cell as Frog).checked ? true : false}
-              onClick={() => onClickCheckboxHandler(cell.id)}
+              onClick={(event) => onClickCheckboxHandler(event, cell.id)}
             ></input>
           </div>
         ))
