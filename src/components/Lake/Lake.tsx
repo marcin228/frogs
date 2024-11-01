@@ -1,7 +1,7 @@
-import React, { useState } from "react"
+import React, { MouseEvent, useState } from "react"
 import './Lake.css'
 import '../../helpers/Helpers'
-import Helpers from "../../helpers/Helpers";
+import Helpers, { Point } from "../../helpers/Helpers";
 
 type LakeProps = {
     children?:React.ReactNode,
@@ -12,8 +12,16 @@ enum Gender {
     female = 'female'
 }
 
-type Weight = 'fat' | 'slim';
-type Height = 'tall' | 'short';
+enum Weight {
+    fat = 'fat', 
+    slim = 'slim'
+}
+
+enum Height {
+    tall = 'tall', 
+    short = 'short'
+}
+
 type Characteristics = [Weight, Height];
 type Frog = {
 
@@ -30,7 +38,28 @@ const LAKE_HEIGTH:number = 6;
 const MALE_DISTANCE: number = 3;
 const FEMALE_DISTANCE: number = 2;
 
-const Lake:React.FC<LakeProps> = ({ children }) => {
+const Lake:React.FC<LakeProps> = () => {
+
+    const checkAdjacentCellsInMatrix = function(pos:Point, matrix:Array<Array<Frog>>):Point | null{
+
+        const adjacencyOrder = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
+        let result:Point|null = null;
+
+        adjacencyOrder.forEach(_ => { 
+
+            const y = pos.y + _[0];
+            const x = pos.x + _[1];
+            
+            if(x >= 0 && x < LAKE_WIDTH && y >= 0 && y < LAKE_HEIGTH)
+                if(!matrix[y][x].alive){
+                    
+                    result = { x: x, y: y };
+                    return;
+                }
+        });
+
+        return result;
+    }
 
     const onClickJumpHandler = function():void{
 
@@ -74,9 +103,44 @@ const Lake:React.FC<LakeProps> = ({ children }) => {
 
     const onClickReproduce = function():void{
 
+        const [id1, id2] = [...selectedFrogsIds.values()].map(Number);
+        const tmpLakeState = structuredClone(lakeState);
+
+        const pos1 = { y: Math.floor(id1 / LAKE_WIDTH), x: id1 % LAKE_WIDTH };
+        const pos2 = { y: Math.floor(id2 / LAKE_WIDTH), x: id2 % LAKE_WIDTH };
+
+        const distance = Helpers.calculateDistance(pos1, pos2);
+
+        const cell1 = tmpLakeState[pos1.y][pos1.x];
+        const cell2 = tmpLakeState[pos2.y][pos2.x];
+        const femalePos = cell1.gender == Gender.female ? pos1 : pos2;
+
+        console.log('REPR')
+
+        if(cell1.alive && cell2.alive && cell1.gender != cell2.gender && distance == 1){
+
+            console.log("REPR 2");
+
+            const childPos = checkAdjacentCellsInMatrix(femalePos, tmpLakeState);
+            
+            if(childPos == null)
+                return;
+
+            tmpLakeState[childPos.y][childPos.x] = {
+                id: childPos.x + childPos.y,
+                alive: true,
+                gender: Helpers.getRandomNumber(0, 1) == 0 ? Gender.female : Gender.male,
+                checked: false,
+                characteristics: ([cell1.characteristics[0], cell2.characteristics[1]] as Characteristics)
+            };
+
+            setLakeState(tmpLakeState);
+        }
+        else
+            return;
     }
 
-    const onClickCheckboxHandler = function (event:Event, id:number) {
+    const onClickCheckboxHandler = function (event:MouseEvent, id:number) {
 
         if((event.currentTarget as HTMLInputElement).checked){
             if(selectedFrogsNum >= 2){
@@ -115,15 +179,25 @@ const Lake:React.FC<LakeProps> = ({ children }) => {
     const [lakeState, setLakeState] = useState(
         new Array(LAKE_HEIGTH).fill(null).map((a, row) =>
             new Array(LAKE_WIDTH).fill(null).map((b, col) => {
+
+                let isAlive:boolean = false;
+                let defaultGender:Gender = Gender.male;
+
+                if(row * LAKE_WIDTH + col == 0 || row * LAKE_WIDTH + col == 1)
+                    isAlive = true;
+
+                if (row * LAKE_WIDTH + col == 1)
+                    defaultGender = Gender.female;
+
                 return {
-                  id: parseInt(row) * LAKE_WIDTH + parseInt(col),
-                  alive:
-                    parseInt(row) * LAKE_WIDTH + parseInt(col) == 3
-                      ? true
-                      : false,
-                  checked: false,
-                  gender: Gender.male,
-                  characteristics: ["fat", "tall"],
+                    id: row * LAKE_WIDTH + col,
+                    alive: isAlive,
+                    checked: false,
+                    gender: defaultGender,
+                    characteristics: [
+                        Weight.fat,
+                        Height.tall,
+                    ] as Characteristics,
                 };
             })
         )
@@ -143,7 +217,7 @@ const Lake:React.FC<LakeProps> = ({ children }) => {
               <input
                 type="checkbox"
                 checked={(cell as Frog).checked ? true : false}
-                onClick={(event) => onClickCheckboxHandler(event, cell.id)}
+                onClick={(event:MouseEvent) => onClickCheckboxHandler(event, cell.id)}
                 data-id={cell.id}
               ></input>
             </div>
